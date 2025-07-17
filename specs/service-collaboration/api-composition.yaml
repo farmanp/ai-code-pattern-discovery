@@ -1,0 +1,21 @@
+service_collaboration_patterns:
+  - name: "API Composition"
+    category: "microservices"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "gateway service"
+      - "aggregator"
+      - "joins multiple service APIs"
+      - "compose response"
+    report_fields:
+      - "composition_strategy"
+      - "service_dependencies"
+      - "response_format"
+      - "caching"
+    related:
+      design_patterns:
+        - "Facade"
+      cloud:
+        - "Microservices"
