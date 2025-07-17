@@ -1,0 +1,17 @@
+architectural_patterns:
+  - name: "Microservice Architecture"
+    category: "architectural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "independent service directories"
+      - "Dockerfile per service"
+      - "deployment manifest per service"
+      - "communication code between services"
+      - "decentralized data ownership"
+    report_fields:
+      - "service_count"
+      - "communication_style"
+      - "deployment_strategy"
+      - "ownership_model"
