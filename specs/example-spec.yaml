@@ -1,0 +1,9 @@
+# Example spec demonstrating configuration for an AI-driven tool
+# Replace contents with your own YAML specification
+
+name: ExampleSpec
+version: 0.1
+components:
+  - component: Placeholder
+    description: >
+      This is just a sample entry to illustrate the structure

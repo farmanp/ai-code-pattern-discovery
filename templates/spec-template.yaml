@@ -1,0 +1,8 @@
+# Template for new specifications
+# Copy and modify fields as needed
+
+name: TemplateName
+version: 0.1
+components:
+  - component: YourComponent
+    description: Describe the component here
