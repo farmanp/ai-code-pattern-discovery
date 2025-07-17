@@ -1,0 +1,26 @@
+service_collaboration_patterns:
+  # Messaging & Consistency Patterns
+  - name: "Saga"
+    category: "messaging_consistency"
+    implementation_complexity: High
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "state machine"
+      - "orchestrator"
+      - "compensation"
+      - "Axon"
+      - "Temporal"
+      - "local transactions"
+      - "retry logic"
+    report_fields:
+      - "coordination_style"
+      - "compensation_strategy"
+      - "retry_policy"
+      - "timeout_handling"
+    related:
+      cloud:
+        - "Microservices Architecture"
+      design_patterns:
+        - "State"
+        - "Command"
