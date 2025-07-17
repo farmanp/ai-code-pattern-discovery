@@ -1,0 +1,372 @@
+cloud_architecture_patterns:
+  # AWS Patterns
+  - name: "EC2 Instance"
+    category: "aws"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "aws_instance"
+      - "ec2"
+      - "launch configuration"
+      - "autoscaling group"
+    report_fields:
+      - "instance_type"
+      - "scaling_strategy"
+      - "networking"
+      - "cost_estimation"
+  - name: "Lambda Function"
+    category: "aws"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "aws_lambda_function"
+      - "lambda_handler"
+      - "serverless.yml"
+      - "event source mapping"
+    report_fields:
+      - "runtime"
+      - "memory_size"
+      - "timeout"
+      - "cost_estimation"
+  - name: "S3 Bucket"
+    category: "aws"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "aws_s3_bucket"
+      - "bucket policy"
+      - "public-read"
+      - "lifecycle rule"
+    report_fields:
+      - "versioning"
+      - "encryption"
+      - "access_control"
+      - "cost_estimation"
+  - name: "RDS Instance"
+    category: "aws"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "aws_db_instance"
+      - "rds"
+      - "parameter group"
+      - "subnet group"
+    report_fields:
+      - "engine"
+      - "instance_class"
+      - "backup_retention"
+      - "cost_estimation"
+  - name: "CloudFormation or CDK"
+    category: "aws"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "cloudformation"
+      - "cdk"
+      - "stack"
+      - "template.yaml"
+    report_fields:
+      - "stack_name"
+      - "resources_defined"
+      - "parameter_usage"
+      - "cost_estimation"
+  - name: "IAM Policy"
+    category: "aws"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "aws_iam_policy"
+      - "policy document"
+      - "assume role"
+      - "least privilege"
+    report_fields:
+      - "privilege_scope"
+      - "resource_restrictions"
+      - "policy_size"
+      - "compliance_check"
+  - name: "VPC Configuration"
+    category: "aws"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "aws_vpc"
+      - "subnet"
+      - "route table"
+      - "security group"
+    report_fields:
+      - "cidr_blocks"
+      - "public_private_split"
+      - "firewall_rules"
+      - "compliance_check"
+
+  # Azure Patterns
+  - name: "Azure Function"
+    category: "azure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "azurerm_function_app"
+      - "func.azurewebsites.net"
+      - "function.json"
+      - "Durable Functions"
+    report_fields:
+      - "runtime"
+      - "plan_type"
+      - "app_settings"
+      - "cost_estimation"
+  - name: "Azure App Service"
+    category: "azure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "azurerm_app_service"
+      - "webapp"
+      - "app service plan"
+      - "deployment slot"
+    report_fields:
+      - "sku"
+      - "scaling"
+      - "diagnostics"
+      - "cost_estimation"
+  - name: "ARM Template"
+    category: "azure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "azuredeploy.json"
+      - "arm template"
+      - "bicep"
+    report_fields:
+      - "resources_defined"
+      - "parameters"
+      - "outputs"
+      - "cost_estimation"
+  - name: "Azure AD Integration"
+    category: "azure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "azuread_application"
+      - "service principal"
+      - "oauth2Permissions"
+      - "rbac"
+    report_fields:
+      - "app_roles"
+      - "permission_scopes"
+      - "conditional_access"
+      - "compliance_check"
+  - name: "Azure Storage"
+    category: "azure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "azurerm_storage_account"
+      - "blob service"
+      - "queue service"
+      - "table service"
+    report_fields:
+      - "redundancy"
+      - "access_tier"
+      - "network_rules"
+      - "cost_estimation"
+
+  # GCP Patterns
+  - name: "Compute Engine"
+    category: "gcp"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "google_compute_instance"
+      - "gcloud compute"
+      - "instance_template"
+    report_fields:
+      - "machine_type"
+      - "boot_disk"
+      - "network_tags"
+      - "cost_estimation"
+  - name: "Cloud Function"
+    category: "gcp"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "google_cloudfunctions_function"
+      - "index.js"
+      - "requirements.txt"
+    report_fields:
+      - "runtime"
+      - "memory"
+      - "trigger"
+      - "cost_estimation"
+  - name: "Deployment Manager"
+    category: "gcp"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "deployment manager"
+      - "config.yaml"
+      - "jinja"
+    report_fields:
+      - "resources_defined"
+      - "imports"
+      - "outputs"
+      - "cost_estimation"
+  - name: "GCP IAM Policy"
+    category: "gcp"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "gcp_iam_policy"
+      - "serviceAccount"
+      - "roles/"
+    report_fields:
+      - "role_bindings"
+      - "service_accounts"
+      - "condition_policies"
+      - "compliance_check"
+  - name: "Cloud Storage"
+    category: "gcp"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "google_storage_bucket"
+      - "bucket policy"
+      - "nearline"
+    report_fields:
+      - "location"
+      - "versioning"
+      - "encryption"
+      - "cost_estimation"
+
+  # Multi-Cloud & Kubernetes
+  - name: "Terraform Module"
+    category: "multi-cloud"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "terraform module"
+      - "variables.tf"
+      - "outputs.tf"
+    report_fields:
+      - "providers"
+      - "resource_count"
+      - "reusability"
+      - "compliance_check"
+  - name: "Kubernetes Manifest"
+    category: "multi-cloud"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "apiVersion: v1"
+      - "kind: Pod"
+      - "kind: Deployment"
+    report_fields:
+      - "resource_limits"
+      - "replicas"
+      - "namespace"
+      - "cost_estimation"
+  - name: "Helm Chart"
+    category: "multi-cloud"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "Chart.yaml"
+      - "values.yaml"
+      - "helm install"
+    report_fields:
+      - "chart_version"
+      - "config_overrides"
+      - "release_name"
+      - "cost_estimation"
+  - name: "Service Mesh"
+    category: "multi-cloud"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "istio"
+      - "linkerd"
+      - "envoy proxy"
+    report_fields:
+      - "mTLS"
+      - "traffic_policy"
+      - "observability"
+      - "compliance_check"
+
+  # Cloud-Native Patterns
+  - name: "Microservices Architecture"
+    category: "cloud-native"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "service registry"
+      - "api gateway"
+      - "bounded context"
+    report_fields:
+      - "service_count"
+      - "communication_style"
+      - "deployment_strategy"
+      - "cost_estimation"
+  - name: "Event-Driven Architecture"
+    category: "cloud-native"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "message broker"
+      - "event bus"
+      - "pub/sub"
+    report_fields:
+      - "broker_type"
+      - "event_formats"
+      - "delivery_guarantees"
+      - "cost_estimation"
+  - name: "Serverless Pattern"
+    category: "cloud-native"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "faas"
+      - "function as a service"
+      - "serverless framework"
+    report_fields:
+      - "platform"
+      - "cold_start_mitigation"
+      - "scaling_events"
+      - "cost_estimation"
+  - name: "Container Orchestration"
+    category: "cloud-native"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "kubernetes"
+      - "docker swarm"
+      - "scheduler"
+    report_fields:
+      - "cluster_size"
+      - "autoscaling"
+      - "resource_utilization"
+      - "cost_estimation"
+

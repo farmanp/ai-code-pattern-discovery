@@ -1,0 +1,469 @@
+patterns:
+  # Creational Patterns
+  - name: "Singleton"
+    category: "creational"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "private constructor"
+      - "static instance"
+      - "getInstance()"
+      - "synchronized"
+      - "volatile"
+    report_fields:
+      - "thread_safety"
+      - "lazy_initialization"
+      - "enum_implementation"
+    related:
+      security:
+        - "Thread Safety"
+
+  - name: "Factory Method"
+    category: "creational"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "createProduct()"
+      - "abstract factory"
+      - "product interface"
+      - "concrete creator"
+    report_fields:
+      - "product_types"
+      - "creator_hierarchy"
+      - "parameter_handling"
+    related:
+      datahub:
+        - "Dataset"
+        - "DataJob"
+      security:
+        - "Input Validation"
+
+  - name: "Abstract Factory"
+    category: "creational"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "family of products"
+      - "createProductA()"
+      - "createProductB()"
+      - "concrete factory"
+    report_fields:
+      - "product_families"
+      - "factory_interface"
+      - "extensibility"
+
+  - name: "Builder"
+    category: "creational"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "build()"
+      - "fluent interface"
+      - "method chaining"
+      - "director class"
+      - "step-by-step construction"
+    report_fields:
+      - "fluent_api"
+      - "validation_strategy"
+      - "immutability"
+
+  - name: "Prototype"
+    category: "creational"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "clone()"
+      - "Cloneable"
+      - "deep copy"
+      - "shallow copy"
+      - "registry"
+    report_fields:
+      - "cloning_strategy"
+      - "serialization_approach"
+      - "registry_usage"
+
+  # Structural Patterns
+  - name: "Adapter"
+    category: "structural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "adaptee"
+      - "target interface"
+      - "wrapper"
+      - "legacy code"
+      - "incompatible interface"
+    report_fields:
+      - "adaptation_strategy"
+      - "two_way_adapter"
+      - "class_vs_object_adapter"
+
+  - name: "Bridge"
+    category: "structural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "abstraction"
+      - "implementor"
+      - "refined abstraction"
+      - "concrete implementor"
+      - "handle/body"
+    report_fields:
+      - "abstraction_levels"
+      - "platform_independence"
+      - "runtime_binding"
+
+  - name: "Composite"
+    category: "structural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "tree structure"
+      - "leaf"
+      - "composite"
+      - "component interface"
+      - "add()/remove()"
+    report_fields:
+      - "tree_operations"
+      - "transparency_vs_safety"
+      - "child_management"
+
+  - name: "Decorator"
+    category: "structural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "wrap"
+      - "enhance"
+      - "component interface"
+      - "concrete decorator"
+      - "dynamic behavior"
+    report_fields:
+      - "decoration_strategy"
+      - "multiple_decorators"
+      - "interface_consistency"
+
+  - name: "Facade"
+    category: "structural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "simplified interface"
+      - "subsystem"
+      - "unified interface"
+      - "complexity hiding"
+    report_fields:
+      - "subsystem_complexity"
+      - "interface_design"
+      - "coupling_reduction"
+    related:
+      cloud:
+        - "Microservices"
+
+  - name: "Flyweight"
+    category: "structural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "intrinsic state"
+      - "extrinsic state"
+      - "shared objects"
+      - "factory"
+      - "memory optimization"
+    report_fields:
+      - "state_separation"
+      - "sharing_strategy"
+      - "memory_savings"
+
+  - name: "Proxy"
+    category: "structural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "surrogate"
+      - "placeholder"
+      - "subject interface"
+      - "real subject"
+      - "access control"
+    report_fields:
+      - "proxy_type"
+      - "lazy_loading"
+      - "access_control_logic"
+    related:
+      security:
+        - "Weak Authentication"
+        - "Broken Authorization"
+
+  # Behavioral Patterns
+  - name: "Observer"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "subject"
+      - "observer"
+      - "notify()"
+      - "update()"
+      - "subscribe/unsubscribe"
+    report_fields:
+      - "notification_strategy"
+      - "observer_management"
+      - "push_vs_pull"
+    related:
+      datahub:
+        - "DataFlow"
+        - "DataJob"
+
+  - name: "Strategy"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "algorithm family"
+      - "context"
+      - "strategy interface"
+      - "concrete strategy"
+      - "runtime selection"
+    report_fields:
+      - "algorithm_variants"
+      - "selection_mechanism"
+      - "context_coupling"
+    related:
+      algorithms:
+        - "Merge Sort"
+        - "Quick Sort"
+        - "Heap Sort"
+
+  - name: "Command"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "execute()"
+      - "undo()"
+      - "receiver"
+      - "invoker"
+      - "macro command"
+    report_fields:
+      - "undo_support"
+      - "command_queuing"
+      - "macro_commands"
+
+  - name: "State"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "state machine"
+      - "context"
+      - "state interface"
+      - "concrete state"
+      - "state transition"
+    report_fields:
+      - "state_transitions"
+      - "state_data"
+      - "transition_logic"
+
+  - name: "Template Method"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "algorithm skeleton"
+      - "abstract class"
+      - "hook methods"
+      - "primitive operations"
+      - "Hollywood principle"
+    report_fields:
+      - "template_structure"
+      - "hook_usage"
+      - "customization_points"
+
+  - name: "Chain of Responsibility"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "handler chain"
+      - "successor"
+      - "handleRequest()"
+      - "request passing"
+      - "decoupling"
+    report_fields:
+      - "chain_structure"
+      - "request_handling"
+      - "termination_conditions"
+
+  - name: "Mediator"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "mediator interface"
+      - "concrete mediator"
+      - "colleague"
+      - "loose coupling"
+      - "centralized control"
+    report_fields:
+      - "mediation_logic"
+      - "colleague_interaction"
+      - "coupling_reduction"
+
+  - name: "Memento"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "originator"
+      - "memento"
+      - "caretaker"
+      - "snapshot"
+      - "state restoration"
+    report_fields:
+      - "state_capture"
+      - "encapsulation_preservation"
+      - "storage_strategy"
+
+  - name: "Iterator"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "hasNext()"
+      - "next()"
+      - "aggregate"
+      - "concrete iterator"
+      - "traversal"
+    report_fields:
+      - "traversal_strategy"
+      - "multiple_iterators"
+      - "modification_handling"
+    related:
+      algorithms:
+        - "Depth-First Search"
+        - "Breadth-First Search"
+
+  - name: "Visitor"
+    category: "behavioral"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "accept()"
+      - "visit()"
+      - "visitor interface"
+      - "concrete visitor"
+      - "double dispatch"
+    report_fields:
+      - "operation_externalization"
+      - "element_hierarchy"
+      - "visitor_extensibility"
+    related:
+      algorithms:
+        - "Tree Traversal"
+
+  # Architectural Patterns
+  - name: "Model-View-Controller (MVC)"
+    category: "architectural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "model"
+      - "view"
+      - "controller"
+      - "separation of concerns"
+      - "user interface"
+    report_fields:
+      - "mvc_variant"
+      - "data_binding"
+      - "view_synchronization"
+
+  - name: "Model-View-Presenter (MVP)"
+    category: "architectural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "presenter"
+      - "passive view"
+      - "supervising controller"
+      - "view interface"
+    report_fields:
+      - "mvp_variant"
+      - "view_abstraction"
+      - "presenter_logic"
+
+  - name: "Model-View-ViewModel (MVVM)"
+    category: "architectural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "view model"
+      - "data binding"
+      - "command binding"
+      - "property change notification"
+    report_fields:
+      - "binding_strategy"
+      - "viewmodel_logic"
+      - "two_way_binding"
+
+  - name: "Repository"
+    category: "architectural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "data access"
+      - "domain objects"
+      - "query interface"
+      - "in-memory collection"
+      - "persistence abstraction"
+    report_fields:
+      - "query_capabilities"
+      - "caching_strategy"
+      - "unit_of_work_integration"
+    related:
+      datahub:
+        - "Dataset"
+
+  - name: "Dependency Injection"
+    category: "architectural"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "IoC container"
+      - "constructor injection"
+      - "setter injection"
+      - "interface injection"
+      - "inversion of control"
+    report_fields:
+      - "injection_type"
+      - "lifecycle_management"
+      - "container_usage"
+    related:
+      cloud:
+        - "Containers"

@@ -1,0 +1,672 @@
+algorithms_and_data_structures:
+  # Data Structures
+  - name: "Array"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "array"
+      - "list"
+      - "vector"
+      - "arraylist"
+    hints:
+      - "contiguous memory"
+      - "index access"
+      - "fixed size"
+      - "random access"
+    time_complexity:
+      access: "O(1)"
+      search: "O(n)"
+      insertion: "O(n)"
+      deletion: "O(n)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "size_management"
+      - "bounds_checking"
+      - "memory_allocation"
+
+  - name: "Dynamic Array"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "dynamic_array"
+      - "resizable_array"
+      - "growable_array"
+    hints:
+      - "resize"
+      - "capacity"
+      - "growth factor"
+      - "amortized"
+    time_complexity:
+      access: "O(1)"
+      search: "O(n)"
+      insertion: "O(1) amortized"
+      deletion: "O(n)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "resizing_strategy"
+      - "growth_factor"
+      - "memory_efficiency"
+
+  - name: "Linked List"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "linked_list"
+      - "singly_linked_list"
+      - "node"
+    hints:
+      - "node"
+      - "next pointer"
+      - "head"
+      - "tail"
+      - "sequential access"
+    time_complexity:
+      access: "O(n)"
+      search: "O(n)"
+      insertion: "O(1)"
+      deletion: "O(1)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "list_type"
+      - "pointer_management"
+      - "memory_overhead"
+
+  - name: "Doubly Linked List"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "doubly_linked_list"
+      - "double_linked_list"
+    hints:
+      - "prev pointer"
+      - "next pointer"
+      - "bidirectional"
+      - "sentinel node"
+    time_complexity:
+      access: "O(n)"
+      search: "O(n)"
+      insertion: "O(1)"
+      deletion: "O(1)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "bidirectional_traversal"
+      - "sentinel_usage"
+      - "pointer_consistency"
+
+  - name: "Stack"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "stack"
+      - "lifo"
+    hints:
+      - "push"
+      - "pop"
+      - "top"
+      - "LIFO"
+      - "last in first out"
+    time_complexity:
+      access: "O(n)"
+      search: "O(n)"
+      insertion: "O(1)"
+      deletion: "O(1)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "implementation_type"
+      - "overflow_handling"
+      - "underflow_handling"
+
+  - name: "Queue"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "queue"
+      - "fifo"
+    hints:
+      - "enqueue"
+      - "dequeue"
+      - "front"
+      - "rear"
+      - "FIFO"
+      - "first in first out"
+    time_complexity:
+      access: "O(n)"
+      search: "O(n)"
+      insertion: "O(1)"
+      deletion: "O(1)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "implementation_type"
+      - "circular_buffer"
+      - "blocking_behavior"
+
+  - name: "Priority Queue"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "priority_queue"
+      - "heap_queue"
+    hints:
+      - "priority"
+      - "heap"
+      - "compare"
+      - "enqueue with priority"
+    time_complexity:
+      access: "O(1)"
+      search: "O(n)"
+      insertion: "O(log n)"
+      deletion: "O(log n)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "heap_type"
+      - "priority_comparison"
+      - "tie_breaking"
+
+  - name: "Hash Table"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "hash_table"
+      - "hash_map"
+      - "dictionary"
+      - "associative_array"
+    hints:
+      - "hash function"
+      - "bucket"
+      - "collision"
+      - "key-value"
+      - "chaining"
+      - "open addressing"
+    time_complexity:
+      access: "O(1) average"
+      search: "O(1) average"
+      insertion: "O(1) average"
+      deletion: "O(1) average"
+    space_complexity: "O(n)"
+    report_fields:
+      - "hash_function"
+      - "collision_resolution"
+      - "load_factor"
+
+  - name: "Binary Tree"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "binary_tree"
+      - "tree_node"
+    hints:
+      - "left child"
+      - "right child"
+      - "root"
+      - "leaf"
+      - "subtree"
+    time_complexity:
+      access: "O(n)"
+      search: "O(n)"
+      insertion: "O(n)"
+      deletion: "O(n)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "tree_structure"
+      - "traversal_methods"
+      - "balancing_strategy"
+
+  - name: "Binary Search Tree"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "binary_search_tree"
+      - "bst"
+    hints:
+      - "left < root < right"
+      - "in-order traversal"
+      - "search property"
+      - "ordered"
+    time_complexity:
+      access: "O(log n) average"
+      search: "O(log n) average"
+      insertion: "O(log n) average"
+      deletion: "O(log n) average"
+    space_complexity: "O(n)"
+    report_fields:
+      - "balancing_mechanism"
+      - "duplicate_handling"
+      - "traversal_order"
+
+  - name: "AVL Tree"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "avl_tree"
+      - "balanced_tree"
+    hints:
+      - "balance factor"
+      - "rotation"
+      - "height balanced"
+      - "self-balancing"
+    time_complexity:
+      access: "O(log n)"
+      search: "O(log n)"
+      insertion: "O(log n)"
+      deletion: "O(log n)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "rotation_types"
+      - "balance_maintenance"
+      - "height_tracking"
+
+  - name: "Red-Black Tree"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "red_black_tree"
+      - "rb_tree"
+    hints:
+      - "red node"
+      - "black node"
+      - "color property"
+      - "rotation"
+      - "recoloring"
+    time_complexity:
+      access: "O(log n)"
+      search: "O(log n)"
+      insertion: "O(log n)"
+      deletion: "O(log n)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "color_properties"
+      - "balancing_operations"
+      - "invariant_maintenance"
+
+  - name: "Heap"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "heap"
+      - "binary_heap"
+      - "min_heap"
+      - "max_heap"
+    hints:
+      - "heap property"
+      - "complete binary tree"
+      - "heapify"
+      - "parent-child relationship"
+    time_complexity:
+      access: "O(1)"
+      search: "O(n)"
+      insertion: "O(log n)"
+      deletion: "O(log n)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "heap_type"
+      - "heapify_strategy"
+      - "array_representation"
+
+  - name: "Graph"
+    category: "data_structure"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "graph"
+      - "adjacency_list"
+      - "adjacency_matrix"
+      - "edge_list"
+    hints:
+      - "vertex"
+      - "edge"
+      - "adjacency"
+      - "directed"
+      - "undirected"
+      - "weighted"
+    time_complexity:
+      access: "varies"
+      search: "varies"
+      insertion: "varies"
+      deletion: "varies"
+    space_complexity: "O(V + E)"
+    report_fields:
+      - "representation_type"
+      - "graph_properties"
+      - "storage_efficiency"
+
+  # Sorting Algorithms
+  - name: "Bubble Sort"
+    category: "sorting"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "bubble_sort"
+      - "exchange_sort"
+    hints:
+      - "adjacent elements"
+      - "swap"
+      - "bubble up"
+      - "multiple passes"
+    time_complexity:
+      best: "O(n)"
+      average: "O(n²)"
+      worst: "O(n²)"
+    space_complexity: "O(1)"
+    report_fields:
+      - "optimization_flags"
+      - "early_termination"
+      - "stability"
+
+  - name: "Selection Sort"
+    category: "sorting"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "selection_sort"
+    hints:
+      - "minimum element"
+      - "unsorted portion"
+      - "selection"
+      - "in-place"
+    time_complexity:
+      best: "O(n²)"
+      average: "O(n²)"
+      worst: "O(n²)"
+    space_complexity: "O(1)"
+    report_fields:
+      - "selection_strategy"
+      - "comparison_count"
+      - "memory_usage"
+
+  - name: "Insertion Sort"
+    category: "sorting"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "insertion_sort"
+    hints:
+      - "sorted portion"
+      - "insert"
+      - "shift elements"
+      - "adaptive"
+    time_complexity:
+      best: "O(n)"
+      average: "O(n²)"
+      worst: "O(n²)"
+    space_complexity: "O(1)"
+    report_fields:
+      - "adaptive_behavior"
+      - "binary_insertion"
+      - "online_property"
+
+  - name: "Merge Sort"
+    category: "sorting"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "merge_sort"
+      - "divide_and_conquer"
+    hints:
+      - "divide"
+      - "conquer"
+      - "merge"
+      - "recursive"
+      - "stable"
+    time_complexity:
+      best: "O(n log n)"
+      average: "O(n log n)"
+      worst: "O(n log n)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "merge_strategy"
+      - "memory_optimization"
+      - "stability_preservation"
+    related_patterns:
+      - "Strategy"
+
+  - name: "Quick Sort"
+    category: "sorting"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "quick_sort"
+      - "partition_sort"
+    hints:
+      - "pivot"
+      - "partition"
+      - "divide and conquer"
+      - "in-place"
+      - "randomized"
+    time_complexity:
+      best: "O(n log n)"
+      average: "O(n log n)"
+      worst: "O(n²)"
+    space_complexity: "O(log n)"
+    report_fields:
+      - "pivot_selection"
+      - "partitioning_scheme"
+      - "worst_case_handling"
+    related_patterns:
+      - "Strategy"
+
+  - name: "Heap Sort"
+    category: "sorting"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "heap_sort"
+    hints:
+      - "heapify"
+      - "max heap"
+      - "extract max"
+      - "in-place"
+    time_complexity:
+      best: "O(n log n)"
+      average: "O(n log n)"
+      worst: "O(n log n)"
+    space_complexity: "O(1)"
+    report_fields:
+      - "heap_construction"
+      - "extraction_process"
+      - "memory_efficiency"
+    related_patterns:
+      - "Strategy"
+
+  # Search Algorithms
+  - name: "Linear Search"
+    category: "searching"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "linear_search"
+      - "sequential_search"
+    hints:
+      - "sequential"
+      - "one by one"
+      - "unsorted data"
+      - "first occurrence"
+    time_complexity:
+      best: "O(1)"
+      average: "O(n)"
+      worst: "O(n)"
+    space_complexity: "O(1)"
+    report_fields:
+      - "search_direction"
+      - "early_termination"
+      - "multiple_occurrences"
+
+  - name: "Binary Search"
+    category: "searching"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "binary_search"
+      - "half_interval_search"
+    hints:
+      - "sorted array"
+      - "divide and conquer"
+      - "middle element"
+      - "logarithmic"
+    time_complexity:
+      best: "O(1)"
+      average: "O(log n)"
+      worst: "O(log n)"
+    space_complexity: "O(1)"
+    report_fields:
+      - "implementation_type"
+      - "boundary_handling"
+      - "variant_type"
+
+  - name: "Depth-First Search"
+    category: "graph_algorithm"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "dfs"
+      - "depth_first_search"
+    hints:
+      - "stack"
+      - "recursive"
+      - "backtrack"
+      - "visited"
+      - "explore deep"
+    time_complexity:
+      best: "O(V + E)"
+      average: "O(V + E)"
+      worst: "O(V + E)"
+    space_complexity: "O(V)"
+    report_fields:
+      - "implementation_approach"
+      - "traversal_order"
+      - "cycle_detection"
+    related_patterns:
+      - "Iterator"
+
+  - name: "Breadth-First Search"
+    category: "graph_algorithm"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "bfs"
+      - "breadth_first_search"
+    hints:
+      - "queue"
+      - "level by level"
+      - "shortest path"
+      - "visited"
+      - "neighbors first"
+    time_complexity:
+      best: "O(V + E)"
+      average: "O(V + E)"
+      worst: "O(V + E)"
+    space_complexity: "O(V)"
+    report_fields:
+      - "queue_implementation"
+      - "level_tracking"
+      - "shortest_path_property"
+    related_patterns:
+      - "Iterator"
+
+  # Dynamic Programming
+  - name: "Fibonacci"
+    category: "dynamic_programming"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "fibonacci"
+      - "fib"
+    hints:
+      - "overlapping subproblems"
+      - "memoization"
+      - "tabulation"
+      - "recursive"
+      - "bottom-up"
+    time_complexity:
+      recursive: "O(2^n)"
+      memoized: "O(n)"
+      tabulated: "O(n)"
+    space_complexity: "O(n)"
+    report_fields:
+      - "optimization_technique"
+      - "space_optimization"
+      - "iterative_approach"
+
+  - name: "Longest Common Subsequence"
+    category: "dynamic_programming"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "lcs"
+      - "longest_common_subsequence"
+    hints:
+      - "subsequence"
+      - "two strings"
+      - "dp table"
+      - "optimal substructure"
+    time_complexity:
+      best: "O(m * n)"
+      average: "O(m * n)"
+      worst: "O(m * n)"
+    space_complexity: "O(m * n)"
+    report_fields:
+      - "table_construction"
+      - "backtracking"
+      - "space_optimization"
+
+  # String Algorithms
+  - name: "KMP String Search"
+    category: "string_algorithm"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    paths:
+      - "kmp"
+      - "knuth_morris_pratt"
+    hints:
+      - "pattern matching"
+      - "failure function"
+      - "prefix table"
+      - "linear time"
+    time_complexity:
+      preprocessing: "O(m)"
+      searching: "O(n)"
+      total: "O(n + m)"
+    space_complexity: "O(m)"
+    report_fields:
+      - "failure_function"
+      - "pattern_preprocessing"
+      - "mismatch_handling"
