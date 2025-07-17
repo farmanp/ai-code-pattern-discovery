@@ -1,0 +1,16 @@
+service_boundary_patterns:
+  - name: "Decompose by Business Capability"
+    category: "service-boundary"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "service names reflect business domains (e.g., user-service, payment-service)"
+      - "domain/ folder"
+      - "usecase/ folder"
+      - "model/ folder"
+      - "language-level separation of logic"
+    report_fields:
+      - "service_names"
+      - "domain_structure"
+      - "language_separation"
