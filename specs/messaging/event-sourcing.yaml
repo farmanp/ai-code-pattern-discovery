@@ -1,0 +1,23 @@
+messaging_patterns:
+  - name: "Event Sourcing"
+    category: "messaging_consistency"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "EventStoreDB"
+      - "Axon Framework"
+      - "NEventStore"
+      - "append-only log"
+      - "event replay"
+      - "aggregate apply"
+    report_fields:
+      - "event_store_library"
+      - "snapshotting"
+      - "concurrency_strategy"
+      - "replay_support"
+    related:
+      patterns:
+        - "CQRS"
+      architectural:
+        - "Event-Driven Architecture"
