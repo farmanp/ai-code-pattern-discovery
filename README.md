@@ -44,7 +44,14 @@ This project helps developers and AI systems identify and understand:
    # Install the CLI tool
    uv venv && source .venv/bin/activate && uv pip install -e .
    
-   # Analyze patterns in a codebase
+   # Show prompts without executing (dry run)
+   ai-code-pattern-discovery --dry-run algorithms
+   
+   # Execute prompts using Claude Code (requires Claude subscription)
+   ai-code-pattern-discovery --execute algorithms          # Execute single analysis
+   ai-code-pattern-discovery --execute all                # Execute all analyses
+   
+   # Analyze patterns in a codebase (placeholder mode)
    ai-code-pattern-discovery algorithms                    # Detect algorithms & data structures
    ai-code-pattern-discovery design-patterns              # Detect design patterns
    ai-code-pattern-discovery architectural                # Detect architectural patterns
@@ -53,10 +60,17 @@ This project helps developers and AI systems identify and understand:
    ai-code-pattern-discovery list-specs                   # List available specifications
    
    # Target a specific codebase
-   ai-code-pattern-discovery --target-path /path/to/code all
+   ai-code-pattern-discovery --target-path /path/to/code --execute all
    
    # Run specific pattern analyses
-   ai-code-pattern-discovery all --patterns algorithms --patterns design_patterns
+   ai-code-pattern-discovery --execute all --patterns algorithms --patterns design_patterns
+   
+   # Chain prompts together in a single Claude Code session
+   ai-code-pattern-discovery --execute all --chain
+   
+   # Use different Claude models
+   ai-code-pattern-discovery --execute --model opus algorithms
+   ai-code-pattern-discovery --execute --model haiku all
    ```
 
 ## Project Structure
@@ -88,15 +102,34 @@ ai-code-pattern-discovery/
    uv venv && source .venv/bin/activate && uv pip install -e .
    ```
 
-2. **Analyze a codebase:**
+2. **Preview analysis prompts (dry run):**
    ```bash
-   ai-code-pattern-discovery --target-path /path/to/your/code all
+   ai-code-pattern-discovery --dry-run --target-path /path/to/your/code all
    ```
 
-3. **View available specifications:**
+3. **Execute real analysis with Claude Code:**
+   ```bash
+   ai-code-pattern-discovery --execute --target-path /path/to/your/code all
+   ```
+
+4. **View available specifications:**
    ```bash
    ai-code-pattern-discovery list-specs
    ```
+
+### Prerequisites for Execution Mode
+
+To use the `--execute` flag, you need:
+- [Claude Code](https://claude.ai/code) installed and configured
+- Active Claude subscription
+- Claude Code CLI in your PATH
+
+Install Claude Code:
+```bash
+npm install -g @anthropic-ai/claude-code
+# or
+curl -fsSL https://claude.ai/install.sh | sh
+```
 
 For more detailed information, check out `docs/getting-started.md` for a comprehensive introduction to using this pattern discovery system.
 
