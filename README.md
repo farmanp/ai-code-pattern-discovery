@@ -17,6 +17,7 @@ This project helps developers and AI systems identify and understand:
 - 📋 **Structured Specifications**: YAML-based specifications for consistent pattern documentation
 - 🔗 **Cross-Reference Guide**: Understanding relationships between different pattern types
 - 📊 **Complexity Analysis**: Big-O notation and performance considerations
+- 🖥️ **CLI Tool**: Command-line interface for easy pattern analysis on any codebase
 
 ## Usage
 
@@ -38,6 +39,26 @@ This project helps developers and AI systems identify and understand:
 
 4. **Generate Documentation**: Extend `scripts/generate_from_spec.py` to process specifications and generate pattern documentation.
 
+5. **CLI Tool Usage**: Use the command-line tool to analyze any codebase:
+   ```bash
+   # Install the CLI tool
+   uv venv && source .venv/bin/activate && uv pip install -e .
+   
+   # Analyze patterns in a codebase
+   ai-code-pattern-discovery algorithms                    # Detect algorithms & data structures
+   ai-code-pattern-discovery design-patterns              # Detect design patterns
+   ai-code-pattern-discovery architectural                # Detect architectural patterns
+   ai-code-pattern-discovery cloud                        # Detect cloud patterns
+   ai-code-pattern-discovery all                          # Run all analyses
+   ai-code-pattern-discovery list-specs                   # List available specifications
+   
+   # Target a specific codebase
+   ai-code-pattern-discovery --target-path /path/to/code all
+   
+   # Run specific pattern analyses
+   ai-code-pattern-discovery all --patterns algorithms --patterns design_patterns
+   ```
+
 ## Project Structure
 
 ```
@@ -45,12 +66,76 @@ ai-code-pattern-discovery/
 ├── docs/                    # Pattern taxonomies and guides
 ├── prompts/                 # AI prompts for pattern analysis
 ├── specs/                   # YAML specifications for patterns
+├── src/                     # Python package source code
+│   └── ai_code_pattern_discovery/
+│       ├── __init__.py
+│       ├── cli.py          # Main CLI interface
+│       └── pattern_detector.py  # Pattern detection logic
 ├── scripts/                 # Generation and processing scripts
 ├── examples/                # Example outputs
 ├── templates/               # Specification templates
-└── tests/                   # Test suite
+├── tests/                   # Test suite
+├── pyproject.toml          # Python package configuration
+└── .venv/                  # Virtual environment (created by uv)
 ```
 
 ## Getting Started
 
-Check out `docs/getting-started.md` for a quick introduction to using this pattern discovery system.
+### Quick Start with CLI Tool
+
+1. **Install the package:**
+   ```bash
+   uv venv && source .venv/bin/activate && uv pip install -e .
+   ```
+
+2. **Analyze a codebase:**
+   ```bash
+   ai-code-pattern-discovery --target-path /path/to/your/code all
+   ```
+
+3. **View available specifications:**
+   ```bash
+   ai-code-pattern-discovery list-specs
+   ```
+
+For more detailed information, check out `docs/getting-started.md` for a comprehensive introduction to using this pattern discovery system.
+
+## Installation
+
+### Using uv (Recommended)
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/ai-code-pattern-discovery.git
+cd ai-code-pattern-discovery
+
+# Create virtual environment and install
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv pip install -e .
+```
+
+### Using pip
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/ai-code-pattern-discovery.git
+cd ai-code-pattern-discovery
+
+# Create virtual environment and install
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -e .
+```
+
+## Development
+
+To set up for development:
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
+```
+
+Run tests:
+```bash
+pytest
+```
