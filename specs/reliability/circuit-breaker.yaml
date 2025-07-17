@@ -1,0 +1,17 @@
+reliability_patterns:
+  - name: "Circuit Breaker"
+    category: "reliability"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Low
+    hints:
+      - "Hystrix"
+      - "Resilience4J"
+      - "retry policy"
+      - "fallback handler"
+      - "threshold-based service disablement"
+    report_fields:
+      - "failure_threshold"
+      - "cooldown_period"
+      - "fallback_enabled"
+      - "retry_enabled"
