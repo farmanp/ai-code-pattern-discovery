@@ -1,0 +1,14 @@
+messaging_patterns:
+  - name: "Transactional Outbox"
+    category: "messaging_consistency"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Moderate
+    hints:
+      - "outbox table"
+      - "event and data written in same transaction"
+      - "background publisher"
+      - "poller process"
+    report_fields:
+      - "outbox_table_schema"
+      - "publishing_strategy"
