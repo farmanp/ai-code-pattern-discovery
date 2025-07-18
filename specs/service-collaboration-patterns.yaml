@@ -1,0 +1,122 @@
+service_collaboration_patterns:
+  - name: "Orchestration"
+    category: "coordination"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    hints:
+      - "workflow engine"
+      - "central coordinator"
+      - "calls multiple services"
+    report_fields:
+      - coordination_style
+      - participating_services
+    scaling_opportunities:
+      - symptom: "central point of failure"
+        suggestion: "decentralize using choreography"
+
+  - name: "Choreography"
+    category: "coordination"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    hints:
+      - "event emitter"
+      - "subscribes to events"
+    report_fields:
+      - event_topics
+      - downstream_reactions
+    scaling_opportunities:
+      - symptom: "unobservable service mesh"
+        suggestion: "add event tracing with correlation IDs"
+
+  - name: "Saga"
+    category: "messaging_consistency"
+    implementation_complexity: High
+    detection_complexity: Moderate
+    hints:
+      - "compensation"
+      - "orchestrator"
+      - "Temporal"
+    report_fields:
+      - coordination_style
+      - compensation_strategy
+      - retry_policy
+    scaling_opportunities:
+      - symptom: "saga orchestrator tightly coupled"
+        suggestion: "move to event-driven saga choreography"
+
+  - name: "API Composition"
+    category: "microservices"
+    implementation_complexity: Medium
+    detection_complexity: Low
+    hints:
+      - "aggregates multiple APIs"
+      - "gateway service"
+    report_fields:
+      - composition_strategy
+      - service_dependencies
+    scaling_opportunities:
+      - symptom: "slow joins from downstream APIs"
+        suggestion: "add cache or async batch fetching"
+
+  - name: "Synchronous Request-Response"
+    category: "communication"
+    implementation_complexity: Low
+    detection_complexity: Low
+    hints:
+      - "HTTP request to another service"
+      - "grpc call"
+    report_fields:
+      - downstream_services
+      - timeout_strategy
+    scaling_opportunities:
+      - symptom: "latency or timeout failures"
+        suggestion: "move to async messaging"
+
+  - name: "Asynchronous Messaging"
+    category: "communication"
+    implementation_complexity: Medium
+    detection_complexity: Low
+    hints:
+      - "Kafka"
+      - "message broker"
+      - "queue consumption"
+    report_fields:
+      - message_broker
+      - topic_names
+    scaling_opportunities:
+      - symptom: "unbounded queues"
+        suggestion: "add dead-letter queues and backpressure"
+
+  - name: "Command Messaging"
+    category: "communication"
+    implementation_complexity: Medium
+    detection_complexity: Low
+    hints:
+      - "send command"
+      - "command bus"
+    report_fields:
+      - command_names
+      - handler_services
+
+  - name: "Event-Carried State Transfer"
+    category: "data_consistency"
+    implementation_complexity: High
+    detection_complexity: Moderate
+    hints:
+      - "event includes full entity state"
+      - "event replay for rehydration"
+    report_fields:
+      - event_payload_structure
+      - downstream_state_mirrors
+
+  - name: "CQRS"
+    category: "data_modeling"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    hints:
+      - "query handler"
+      - "command handler"
+      - "separate read/write services"
+    report_fields:
+      - read_model_strategy
+      - write_model_strategy

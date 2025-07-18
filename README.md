@@ -36,8 +36,10 @@ This project helps developers and AI systems identify and understand:
    - `design-patterns-spec.yaml`: Design pattern specification template
    - `algorithms-data-structures-spec.yaml`: Algorithm/DS specification template
    - `cloud-architecture-spec.yaml`: Cloud architecture pattern template
+   - `service-collaboration-patterns.yaml`: Collaboration pattern reference
 
 4. **Generate Documentation**: Extend `scripts/generate_from_spec.py` to process specifications and generate pattern documentation.
+   - `scripts/generate_service_collab_prompt.py` outputs a prompt listing supported collaboration patterns.
 
 5. **CLI Tool Usage**: Use the command-line tool to analyze any codebase:
    ```bash
