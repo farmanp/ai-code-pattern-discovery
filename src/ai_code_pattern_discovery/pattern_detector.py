@@ -3,15 +3,18 @@
 import os
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 import yaml
+
+from .rate_limiter import RateLimiter
 
 
 class PatternDetector:
     """Handles pattern detection across different categories."""
     
-    def __init__(self, repo_root: Path, target_path: Path, execute: bool = False, dry_run: bool = False, model: str = "sonnet"):
+    def __init__(self, repo_root: Path, target_path: Path, execute: bool = False, dry_run: bool = False, model: str = "sonnet", interactive: bool = False, timeout: int = 300, verbose: bool = False, stream: bool = False):
         self.repo_root = repo_root
         self.target_path = target_path
         self.prompts_dir = repo_root / "prompts"
@@ -20,6 +23,11 @@ class PatternDetector:
         self.execute = execute
         self.dry_run = dry_run
         self.model = model
+        self.interactive = interactive
+        self.timeout = timeout
+        self.verbose = verbose
+        self.stream = stream
+        self.rate_limiter = RateLimiter()
     
     def _load_spec(self, spec_filename: str) -> Dict[str, Any]:
         """Load a YAML specification file."""
@@ -64,34 +72,256 @@ class PatternDetector:
             original_cwd = os.getcwd()
             os.chdir(self.target_path)
             
-            # Execute claude command
-            result = subprocess.run(
-                ["claude", "--print", "--model", self.model, prompt],
-                capture_output=True,
-                text=True,
-                timeout=300  # 5 minute timeout
-            )
+            # Build command
+            cmd = ["claude", "--model", self.model]
             
-            # Restore original directory
-            os.chdir(original_cwd)
-            
-            if result.returncode == 0:
-                return result.stdout.strip()
+            if self.interactive:
+                # Interactive mode - user can see and interact with Claude
+                cmd.append(prompt)
+            elif self.stream:
+                # For streaming, we'll use regular print mode but with better monitoring
+                cmd.extend(["--print", prompt])
             else:
-                # Filter out Node.js experimental warnings from stderr
-                stderr_lines = result.stderr.strip().split('\n')
-                error_lines = [line for line in stderr_lines if 'ExperimentalWarning' not in line and 'node --trace-warnings' not in line and line.strip()]
-                error_message = '\n'.join(error_lines) if error_lines else "Unknown error"
-                return f"Error executing Claude Code: {error_message}"
+                # Print mode - return output directly
+                cmd.extend(["--print", prompt])
+            
+            if self.verbose:
+                print(f"[DEBUG] Executing command: {' '.join(cmd)}")
+                print(f"[DEBUG] Working directory: {self.target_path}")
+                print(f"[DEBUG] Timeout: {self.timeout} seconds")
+            
+            if self.stream and not self.interactive:
+                # Try streaming first, fall back to regular if it fails
+                try:
+                    return self._execute_claude_code_streaming(cmd)
+                except Exception as e:
+                    if self.verbose:
+                        print(f"[WARNING] Streaming failed ({e}), falling back to regular execution")
+                    # Fall through to regular execution
+            
+            if True:  # Always execute this block if streaming failed or not enabled
+                # Execute claude command
+                result = subprocess.run(
+                    cmd,
+                    capture_output=not self.interactive,
+                    text=True,
+                    timeout=self.timeout
+                )
+                
+                # Restore original directory
+                os.chdir(original_cwd)
+                
+                if result.returncode == 0:
+                    # Record successful request
+                    self.rate_limiter.record_request("pattern_analysis")
+                    
+                    if self.interactive:
+                        return "Interactive Claude Code session completed. Check your terminal for results."
+                    else:
+                        return result.stdout.strip()
+                else:
+                    # Filter out Node.js experimental warnings from stderr
+                    stderr_lines = result.stderr.strip().split('\n') if result.stderr else []
+                    error_lines = [line for line in stderr_lines if 'ExperimentalWarning' not in line and 'node --trace-warnings' not in line and line.strip()]
+                    error_message = '\n'.join(error_lines) if error_lines else "Unknown error"
+                    return f"Error executing Claude Code: {error_message}"
                 
         except subprocess.TimeoutExpired:
             os.chdir(original_cwd)
-            return "Error: Claude Code execution timed out after 5 minutes"
+            timeout_msg = f"Error: Claude Code execution timed out after {self.timeout} seconds\n\n"
+            timeout_msg += "💡 Try these solutions:\n"
+            timeout_msg += f"  • Increase timeout: --timeout {self.timeout * 2}\n"
+            timeout_msg += "  • Use streaming mode: --stream\n"
+            timeout_msg += "  • Use interactive mode: --interactive\n"
+            timeout_msg += "  • Analyze smaller code sections\n"
+            timeout_msg += "  • Use session mode for exploratory analysis"
+            return timeout_msg
         except FileNotFoundError:
             return "Error: Claude Code CLI not found. Please install Claude Code and ensure it's in your PATH."
         except Exception as e:
             os.chdir(original_cwd)
             return f"Error executing Claude Code: {str(e)}"
+    
+    def _execute_claude_code_streaming(self, cmd: List[str]) -> str:
+        """Execute Claude Code with streaming output and better diagnostics."""
+        import threading
+        import queue
+        import json
+        
+        output_queue = queue.Queue()
+        error_queue = queue.Queue()
+        
+        def stream_output(pipe, queue_obj, prefix=""):
+            """Stream output from subprocess pipe."""
+            try:
+                while True:
+                    line = pipe.readline()
+                    if not line:
+                        break
+                    queue_obj.put(f"{prefix}{line.rstrip()}")
+            except Exception as e:
+                queue_obj.put(f"Error reading stream: {e}")
+        
+        is_json_stream = False  # Disabled for now due to Claude Code requirements
+        
+        try:
+            # Start the process
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=0,  # Unbuffered
+                universal_newlines=True
+            )
+            
+            # Start streaming threads
+            stdout_thread = threading.Thread(target=stream_output, args=(process.stdout, output_queue))
+            stderr_thread = threading.Thread(target=stream_output, args=(process.stderr, error_queue, "[ERROR] "))
+            
+            stdout_thread.daemon = True
+            stderr_thread.daemon = True
+            
+            stdout_thread.start()
+            stderr_thread.start()
+            
+            # Stream output in real-time
+            output_lines = []
+            error_lines = []
+            content_buffer = ""
+            
+            print("[INFO] Claude Code is processing your request...")
+            print("[INFO] Monitoring process output (press Ctrl+C to cancel):")
+            print("=" * 60)
+            print(f"[INFO] Process started at {time.strftime('%H:%M:%S')}")
+            print(f"[INFO] Timeout: {self.timeout} seconds")
+            
+            last_heartbeat = time.time()
+            start_time = time.time()
+            heartbeat_interval = 10  # seconds
+            no_output_count = 0
+            
+            while process.poll() is None:
+                had_output = False
+                
+                # Check for new output
+                try:
+                    while True:
+                        line = output_queue.get_nowait()
+                        
+                        if is_json_stream:
+                            # Parse JSON streaming format
+                            try:
+                                data = json.loads(line)
+                                if 'content' in data:
+                                    content = data['content']
+                                    print(content, end='', flush=True)
+                                    content_buffer += content
+                                    had_output = True
+                                elif 'error' in data:
+                                    print(f"\n[ERROR] {data['error']}")
+                                    error_lines.append(data['error'])
+                                    had_output = True
+                            except json.JSONDecodeError:
+                                # Not valid JSON, treat as regular output
+                                print(line)
+                                output_lines.append(line)
+                                had_output = True
+                        else:
+                            # Regular line output
+                            print(line)
+                            output_lines.append(line)
+                            had_output = True
+                        
+                        last_heartbeat = time.time()
+                        no_output_count = 0
+                except queue.Empty:
+                    pass
+                
+                # Check for errors
+                try:
+                    while True:
+                        line = error_queue.get_nowait()
+                        if 'ExperimentalWarning' not in line and 'node --trace-warnings' not in line:
+                            print(line)
+                            error_lines.append(line)
+                            had_output = True
+                            last_heartbeat = time.time()
+                except queue.Empty:
+                    pass
+                
+                # Heartbeat mechanism
+                current_time = time.time()
+                if current_time - last_heartbeat >= heartbeat_interval:
+                    no_output_count += 1
+                    elapsed_since_output = int(current_time - last_heartbeat)
+                    total_elapsed = int(current_time - start_time)
+                    
+                    if no_output_count <= 3:  # Show heartbeat for first 3 intervals
+                        print(f"[INFO] Still processing... ({elapsed_since_output}s since last output, {total_elapsed}s total)")
+                    elif no_output_count % 6 == 0:  # Show every minute after that
+                        print(f"[INFO] Long-running analysis in progress... (total: {total_elapsed}s)")
+                    last_heartbeat = current_time
+                
+                # Small delay to prevent busy waiting
+                time.sleep(0.5)
+            
+            # Get any remaining output
+            try:
+                while True:
+                    line = output_queue.get_nowait()
+                    print(line)
+                    output_lines.append(line)
+            except queue.Empty:
+                pass
+            
+            # Get any remaining errors
+            try:
+                while True:
+                    line = error_queue.get_nowait()
+                    if 'ExperimentalWarning' not in line and 'node --trace-warnings' not in line:
+                        print(line)
+                        error_lines.append(line)
+            except queue.Empty:
+                pass
+            
+            # Wait for threads to finish
+            stdout_thread.join(timeout=2)
+            stderr_thread.join(timeout=2)
+            
+            print("=" * 60)
+            
+            # Check return code
+            if process.returncode == 0:
+                self.rate_limiter.record_request("pattern_analysis")
+                
+                # Use appropriate result based on format
+                if is_json_stream and content_buffer.strip():
+                    result = content_buffer
+                else:
+                    result = '\n'.join(output_lines)
+                
+                if result.strip():
+                    print(f"\n[INFO] Claude Code completed successfully")
+                    return result
+                else:
+                    print(f"\n[WARNING] Claude Code completed but produced no output")
+                    return "Claude Code completed but produced no output. This may indicate an issue with the prompt or Claude Code configuration."
+            else:
+                error_msg = '\n'.join(error_lines) if error_lines else f"Process exited with code {process.returncode}"
+                return f"Error executing Claude Code: {error_msg}"
+                
+        except KeyboardInterrupt:
+            print("\n[INFO] Cancelling Claude Code execution...")
+            try:
+                process.terminate()
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                print("[WARNING] Process didn't terminate gracefully, forcing kill...")
+                process.kill()
+            return "Analysis cancelled by user"
+        except Exception as e:
+            return f"Error during streaming execution: {str(e)}"
     
     def _analyze_with_ai_prompt(self, prompt: str, pattern_type: str) -> str:
         """

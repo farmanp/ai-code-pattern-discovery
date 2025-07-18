@@ -68,9 +68,21 @@ This project helps developers and AI systems identify and understand:
    # Chain prompts together in a single Claude Code session
    ai-code-pattern-discovery --execute all --chain
    
-   # Use different Claude models
-   ai-code-pattern-discovery --execute --model opus algorithms
-   ai-code-pattern-discovery --execute --model haiku all
+   # Use different Claude models and timeouts
+   ai-code-pattern-discovery --execute --model opus --timeout 600 algorithms
+   ai-code-pattern-discovery --execute --model haiku --timeout 120 all
+   
+   # Interactive mode - start a Claude Code session
+   ai-code-pattern-discovery --execute --interactive session
+   
+   # Skip confirmation prompts and enable streaming
+   ai-code-pattern-discovery --execute --no-confirm --stream all
+   
+   # Verbose mode with streaming for debugging
+   ai-code-pattern-discovery --execute --verbose --stream algorithms
+   
+   # Check usage and rate limits
+   ai-code-pattern-discovery usage
    ```
 
 ## Project Structure
@@ -130,6 +142,44 @@ npm install -g @anthropic-ai/claude-code
 # or
 curl -fsSL https://claude.ai/install.sh | sh
 ```
+
+### Safety Features
+
+The CLI includes several safety features to prevent overloading Claude:
+
+- **Rate Limiting**: Tracks API usage per minute/hour/day
+- **Confirmation Prompts**: Asks before executing expensive operations
+- **Progress Indicators**: Shows real-time progress during analysis
+- **Timeout Controls**: Configurable timeouts for long-running analyses
+- **Usage Monitoring**: Track your API usage with `ai-code-pattern-discovery usage`
+- **Interactive Mode**: Start a Claude Code session for exploratory analysis
+- **Streaming Output**: See Claude's response in real-time with `--stream`
+- **Verbose Mode**: Debug with `--verbose` to see exact commands executed
+- **Graceful Cancellation**: Ctrl+C properly terminates Claude Code processes
+
+### Execution Modes
+
+1. **Placeholder Mode** (default): Shows analysis structure without execution
+2. **Dry Run Mode** (`--dry-run`): Preview prompts that would be executed
+3. **Print Mode** (`--execute`): Execute prompts and return results
+4. **Interactive Mode** (`--execute --interactive`): Start interactive Claude Code session
+5. **Chained Mode** (`--execute --chain`): Combine multiple analyses in one session
+6. **Streaming Mode** (`--execute --stream`): See Claude's response in real-time
+7. **Verbose Mode** (`--execute --verbose`): Debug mode with command details
+
+### Observability Features
+
+The CLI now provides excellent visibility into what's happening:
+
+- **Real-time Streaming**: Use `--stream` to monitor process execution
+- **Heartbeat Messages**: Shows process is alive with timing updates every 10 seconds
+- **Progress Tracking**: Visual indicators show time elapsed and current status
+- **Command Visibility**: `--verbose` shows exactly what commands are being executed
+- **Rate Limit Monitoring**: Always shows current usage before execution
+- **Graceful Cancellation**: Ctrl+C properly stops processes and cleans up
+- **Error Handling**: Clear error messages with troubleshooting hints
+- **Process Monitoring**: Shows start time, timeout, and total elapsed time
+- **Diagnostic Commands**: `test-claude` to verify Claude Code connectivity
 
 For more detailed information, check out `docs/getting-started.md` for a comprehensive introduction to using this pattern discovery system.
 
