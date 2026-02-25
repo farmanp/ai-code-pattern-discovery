@@ -2,18 +2,23 @@
 
 import os
 import subprocess
-import tempfile
 import time
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 import yaml
 
 from .rate_limiter import RateLimiter
+from .skills import PatternSkill, SKILLS, get_skill
 
 
 class PatternDetector:
-    """Handles pattern detection across different categories."""
-    
+    """Handles pattern detection across different categories.
+
+    Detection is driven by the :data:`~ai_code_pattern_discovery.skills.SKILLS`
+    registry.  Each entry in that registry is a :class:`PatternSkill` that
+    pairs a prompt template with the relevant YAML specifications.
+    """
+
     def __init__(self, repo_root: Path, target_path: Path, execute: bool = False, dry_run: bool = False, model: str = "sonnet", interactive: bool = False, timeout: int = 300, verbose: bool = False, stream: bool = False):
         self.repo_root = repo_root
         self.target_path = target_path
@@ -379,177 +384,84 @@ Based on the specification, the output should include:
         
         return analysis_result
     
+    def _run_skill(self, skill: PatternSkill) -> str:
+        """Execute a single :class:`PatternSkill` against the target codebase."""
+        prompt = self._load_prompt_template(skill.prompt_file)
+        return self._analyze_with_ai_prompt(prompt, skill.title)
+
     def detect_algorithms(self) -> str:
         """Detect algorithms and data structures."""
-        prompt = self._load_prompt_template("algorithms-ds-prompt.md")
-        spec = self._load_spec("algorithms-data-structures-spec.yaml")
-        
-        return self._analyze_with_ai_prompt(prompt, "algorithms & data structures")
-    
+        return self._run_skill(get_skill("algorithms"))
+
     def detect_design_patterns(self) -> str:
         """Detect design patterns."""
-        prompt = self._load_prompt_template("design-patterns-prompt.md")
-        spec = self._load_spec("design-patterns-spec.yaml")
-        
-        return self._analyze_with_ai_prompt(prompt, "design patterns")
-    
+        return self._run_skill(get_skill("design-patterns"))
+
     def detect_architectural_patterns(self) -> str:
         """Detect architectural patterns."""
-        # Use cloud architecture spec as a starting point for architectural patterns
-        spec = self._load_spec("cloud-architecture-spec.yaml")
-        
-        prompt = f"""
-You are an AI code auditor analyzing architectural patterns in the codebase at {self.target_path}.
+        return self._run_skill(get_skill("architectural"))
 
-Using the architectural specifications and patterns found in the specs/ directory,
-identify implementations of architectural patterns such as:
-
-- Microservices architecture
-- Layered architecture
-- MVC/MVP/MVVM patterns
-- Event-driven architecture
-- Domain-driven design patterns
-- CQRS (Command Query Responsibility Segregation)
-- Event sourcing
-- Saga patterns
-- Circuit breaker patterns
-- API Gateway patterns
-
-For each detected pattern, provide:
-- File locations and relevant code snippets
-- Pattern implementation quality
-- Adherence to architectural principles
-- Suggestions for improvement
-- Relationships to other patterns
-"""
-        
-        return self._analyze_with_ai_prompt(prompt, "architectural patterns")
-    
     def detect_cloud_patterns(self) -> str:
         """Detect cloud architecture patterns."""
-        spec = self._load_spec("cloud-architecture-spec.yaml")
-        
-        prompt = f"""
-You are an AI code auditor analyzing cloud architecture patterns in the codebase at {self.target_path}.
+        return self._run_skill(get_skill("cloud"))
 
-Using the cloud architecture specification, identify implementations of cloud patterns such as:
+    def detect_service_collaboration(self) -> str:
+        """Detect service collaboration patterns."""
+        return self._run_skill(get_skill("service-collaboration"))
 
-- Microservices and service mesh
-- Container orchestration patterns
-- Serverless patterns
-- Event-driven architectures
-- Cloud-native data patterns
-- Resilience patterns (circuit breaker, retry, timeout)
-- Observability patterns
-- Security patterns
-- Deployment patterns
-
-For each detected pattern, provide:
-- File locations and implementation details
-- Cloud-readiness assessment
-- Scalability considerations
-- Resilience and fault tolerance
-- Security implications
-- Performance characteristics
-- Recommendations for cloud optimization
-"""
-        
-        return self._analyze_with_ai_prompt(prompt, "cloud architecture patterns")
-    
     def get_available_patterns(self) -> List[str]:
         """Get list of available pattern detection categories."""
-        return ["algorithms", "design_patterns", "architectural", "cloud"]
+        return [skill.name for skill in SKILLS]
+
+    def get_available_skills(self) -> List[PatternSkill]:
+        """Return all registered :class:`PatternSkill` objects."""
+        return list(SKILLS)
     
     def detect_all_patterns_chained(self, patterns: List[str]) -> str:
         """Execute all pattern analyses in a single chained Claude Code session."""
         if not self.execute:
             return "Error: Chained analysis requires --execute flag"
-        
-        # Build comprehensive chained prompt
-        chain_prompt = f"""
-I want you to analyze the codebase at {self.target_path} for multiple pattern types in sequence. 
-Please provide a comprehensive analysis covering all requested patterns.
 
-Target Directory: {self.target_path}
+        # Build comprehensive chained prompt using skill registry
+        chain_prompt = (
+            f"I want you to analyze the codebase at {self.target_path} for multiple "
+            "pattern types in sequence. Please provide a comprehensive analysis "
+            "covering all requested patterns.\n\n"
+            f"Target Directory: {self.target_path}\n\n"
+            "Please analyze the following patterns in order:\n"
+        )
 
-Please analyze the following patterns in order:
-"""
-        
-        for i, pattern in enumerate(patterns, 1):
-            if pattern == "algorithms":
-                template = self._load_prompt_template("algorithms-ds-prompt.md")
-            elif pattern == "design_patterns":
-                template = self._load_prompt_template("design-patterns-prompt.md")
-            elif pattern == "architectural":
-                template = f"""
-Analyze architectural patterns in this codebase. Look for:
-- Microservices architecture
-- Layered architecture
-- MVC/MVP/MVVM patterns
-- Event-driven architecture
-- Domain-driven design patterns
-- CQRS and Event sourcing
-- Circuit breaker and other resilience patterns
-
-For each pattern found, provide:
-- File locations and code examples
-- Implementation quality assessment
-- Architectural compliance
-- Recommendations for improvement
-"""
-            elif pattern == "cloud":
-                template = f"""
-Analyze cloud architecture patterns in this codebase. Look for:
-- Cloud-native patterns (12-factor app principles)
-- Containerization patterns
-- Service mesh patterns
-- Event-driven cloud patterns
-- Serverless patterns
-- Cloud security patterns
-- Observability patterns
-
-For each pattern found, provide:
-- File locations and implementation details
-- Cloud-readiness assessment
-- Scalability considerations
-- Best practices compliance
-- Recommendations for cloud optimization
-"""
+        for i, pattern_name in enumerate(patterns, 1):
+            try:
+                skill = get_skill(pattern_name)
+                template = self._load_prompt_template(skill.prompt_file)
+            except KeyError:
+                template = f"Analyze {pattern_name} patterns in the codebase."
+                skill_title = pattern_name.replace("-", " ").replace("_", " ").title()
             else:
-                template = f"Analyze {pattern} patterns in the codebase."
-            
-            chain_prompt += f"""
+                skill_title = skill.title
 
-{i}. {pattern.replace('_', ' ').title()} Analysis:
-{template}
+            chain_prompt += f"\n{i}. {skill_title} Analysis:\n{template}\n\n---\n"
 
----
-"""
-        
-        chain_prompt += """
+        chain_prompt += (
+            "\nPlease provide a comprehensive report with:\n"
+            "1. Executive summary of all patterns found\n"
+            "2. Detailed analysis for each pattern type\n"
+            "3. Cross-pattern relationships and interactions\n"
+            "4. Overall architecture assessment\n"
+            "5. Prioritized recommendations for improvement\n\n"
+            "Format the response with clear sections and use markdown for better readability.\n"
+        )
 
-Please provide a comprehensive report with:
-1. Executive summary of all patterns found
-2. Detailed analysis for each pattern type
-3. Cross-pattern relationships and interactions
-4. Overall architecture assessment
-5. Prioritized recommendations for improvement
-
-Format the response with clear sections and use markdown for better readability.
-"""
-        
         return self._execute_claude_code(chain_prompt)
-    
+
     def get_spec_info(self, pattern_type: str) -> Dict[str, Any]:
         """Get specification information for a pattern type."""
-        spec_mapping = {
-            "algorithms": "algorithms-data-structures-spec.yaml",
-            "design_patterns": "design-patterns-spec.yaml",
-            "architectural": "cloud-architecture-spec.yaml",  # Using cloud spec as base
-            "cloud": "cloud-architecture-spec.yaml"
-        }
-        
-        spec_file = spec_mapping.get(pattern_type)
-        if spec_file:
-            return self._load_spec(spec_file)
+        try:
+            skill = get_skill(pattern_type)
+            # Return the first spec file's contents
+            if skill.spec_files:
+                return self._load_spec(skill.spec_files[0])
+        except KeyError:
+            pass
         return {}

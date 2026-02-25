@@ -15,6 +15,7 @@ from rich.prompt import Confirm
 
 from .pattern_detector import PatternDetector
 from .rate_limiter import RateLimiter
+from .skills import SKILLS, get_skill
 
 
 console = Console()
@@ -147,16 +148,10 @@ def _check_rate_limit_and_confirm(ctx, pattern_type: str, num_requests: int = 1)
     
     return Confirm.ask("Continue with analysis?", default=True)
 
-@cli.command()
-@click.pass_context
-def algorithms(ctx):
-    """Detect algorithms and data structures in the codebase."""
-    if ctx.obj["execute"] and not _check_rate_limit_and_confirm(ctx, "algorithms", 1):
-        console.print("[yellow]Analysis cancelled.[/yellow]")
-        return
-    
-    detector = PatternDetector(
-        ctx.obj["repo_root"], 
+def _make_detector(ctx) -> PatternDetector:
+    """Construct a :class:`PatternDetector` from the current Click context."""
+    return PatternDetector(
+        ctx.obj["repo_root"],
         ctx.obj["target_path"],
         execute=ctx.obj["execute"],
         dry_run=ctx.obj["dry_run"],
@@ -164,16 +159,27 @@ def algorithms(ctx):
         interactive=ctx.obj["interactive"],
         timeout=ctx.obj["timeout"],
         verbose=ctx.obj["verbose"],
-        stream=ctx.obj["stream"]
+        stream=ctx.obj["stream"],
     )
-    
-    console.print("\n[bold green]Algorithms & Data Structures Analysis[/bold green]")
+
+
+def _run_analysis(ctx, skill_name: str) -> None:
+    """Common entry point for single-skill analysis commands."""
+    skill = get_skill(skill_name)
+
+    if ctx.obj["execute"] and not _check_rate_limit_and_confirm(ctx, skill.title, 1):
+        console.print("[yellow]Analysis cancelled.[/yellow]")
+        return
+
+    detector = _make_detector(ctx)
+
+    console.print(f"\n[bold green]{skill.title} Analysis[/bold green]")
     console.print(f"Target: {ctx.obj['target_path']}")
-    
+
     if ctx.obj["execute"]:
         if ctx.obj["stream"]:
             console.print("[cyan]Streaming mode enabled - output will appear in real-time[/cyan]")
-            results = detector.detect_algorithms()
+            results = detector._run_skill(skill)
         else:
             with Progress(
                 SpinnerColumn(),
@@ -182,153 +188,50 @@ def algorithms(ctx):
                 console=console,
             ) as progress:
                 task = progress.add_task("Executing prompt via Claude Code...", total=None)
-                results = detector.detect_algorithms()
+                results = detector._run_skill(skill)
                 progress.update(task, description="Analysis complete!")
     elif ctx.obj["dry_run"]:
         console.print("[yellow]Dry run mode - showing prompt only[/yellow]")
-        results = detector.detect_algorithms()
+        results = detector._run_skill(skill)
     else:
-        results = detector.detect_algorithms()
-    
+        results = detector._run_skill(skill)
+
     console.print("\n" + results)
+
+
+@cli.command()
+@click.pass_context
+def algorithms(ctx):
+    """Detect algorithms and data structures in the codebase."""
+    _run_analysis(ctx, "algorithms")
 
 
 @cli.command()
 @click.pass_context
 def design_patterns(ctx):
     """Detect design patterns in the codebase."""
-    if ctx.obj["execute"] and not _check_rate_limit_and_confirm(ctx, "design patterns", 1):
-        console.print("[yellow]Analysis cancelled.[/yellow]")
-        return
-    
-    detector = PatternDetector(
-        ctx.obj["repo_root"], 
-        ctx.obj["target_path"],
-        execute=ctx.obj["execute"],
-        dry_run=ctx.obj["dry_run"],
-        model=ctx.obj["model"],
-        interactive=ctx.obj["interactive"],
-        timeout=ctx.obj["timeout"],
-        verbose=ctx.obj["verbose"],
-        stream=ctx.obj["stream"]
-    )
-    
-    console.print("\n[bold green]Design Patterns Analysis[/bold green]")
-    console.print(f"Target: {ctx.obj['target_path']}")
-    
-    if ctx.obj["execute"]:
-        if ctx.obj["stream"]:
-            console.print("[cyan]Streaming mode enabled - output will appear in real-time[/cyan]")
-            results = detector.detect_design_patterns()
-        else:
-            with Progress(
-                SpinnerColumn(),
-                TextColumn("[progress.description]{task.description}"),
-                TimeElapsedColumn(),
-                console=console,
-            ) as progress:
-                task = progress.add_task("Executing prompt via Claude Code...", total=None)
-                results = detector.detect_design_patterns()
-                progress.update(task, description="Analysis complete!")
-    elif ctx.obj["dry_run"]:
-        console.print("[yellow]Dry run mode - showing prompt only[/yellow]")
-        results = detector.detect_design_patterns()
-    else:
-        results = detector.detect_design_patterns()
-    
-    console.print("\n" + results)
+    _run_analysis(ctx, "design-patterns")
 
 
 @cli.command()
 @click.pass_context
 def architectural(ctx):
     """Detect architectural patterns in the codebase."""
-    if ctx.obj["execute"] and not _check_rate_limit_and_confirm(ctx, "architectural patterns", 1):
-        console.print("[yellow]Analysis cancelled.[/yellow]")
-        return
-    
-    detector = PatternDetector(
-        ctx.obj["repo_root"],
-        ctx.obj["target_path"],
-        execute=ctx.obj["execute"],
-        dry_run=ctx.obj["dry_run"],
-        model=ctx.obj["model"],
-        interactive=ctx.obj["interactive"],
-        timeout=ctx.obj["timeout"],
-        verbose=ctx.obj["verbose"],
-        stream=ctx.obj["stream"]
-    )
-    
-    console.print("\n[bold green]Architectural Patterns Analysis[/bold green]")
-    console.print(f"Target: {ctx.obj['target_path']}")
-    
-    if ctx.obj["execute"]:
-        if ctx.obj["stream"]:
-            console.print("[cyan]Streaming mode enabled - output will appear in real-time[/cyan]")
-            results = detector.detect_architectural_patterns()
-        else:
-            with Progress(
-                SpinnerColumn(),
-                TextColumn("[progress.description]{task.description}"),
-                TimeElapsedColumn(),
-                console=console,
-            ) as progress:
-                task = progress.add_task("Executing prompt via Claude Code...", total=None)
-                results = detector.detect_architectural_patterns()
-                progress.update(task, description="Analysis complete!")
-    elif ctx.obj["dry_run"]:
-        console.print("[yellow]Dry run mode - showing prompt only[/yellow]")
-        results = detector.detect_architectural_patterns()
-    else:
-        results = detector.detect_architectural_patterns()
-    
-    console.print("\n" + results)
+    _run_analysis(ctx, "architectural")
 
 
 @cli.command()
 @click.pass_context
 def cloud(ctx):
     """Detect cloud architecture patterns in the codebase."""
-    if ctx.obj["execute"] and not _check_rate_limit_and_confirm(ctx, "cloud patterns", 1):
-        console.print("[yellow]Analysis cancelled.[/yellow]")
-        return
-    
-    detector = PatternDetector(
-        ctx.obj["repo_root"],
-        ctx.obj["target_path"],
-        execute=ctx.obj["execute"],
-        dry_run=ctx.obj["dry_run"],
-        model=ctx.obj["model"],
-        interactive=ctx.obj["interactive"],
-        timeout=ctx.obj["timeout"],
-        verbose=ctx.obj["verbose"],
-        stream=ctx.obj["stream"]
-    )
-    
-    console.print("\n[bold green]Cloud Architecture Patterns Analysis[/bold green]")
-    console.print(f"Target: {ctx.obj['target_path']}")
-    
-    if ctx.obj["execute"]:
-        if ctx.obj["stream"]:
-            console.print("[cyan]Streaming mode enabled - output will appear in real-time[/cyan]")
-            results = detector.detect_cloud_patterns()
-        else:
-            with Progress(
-                SpinnerColumn(),
-                TextColumn("[progress.description]{task.description}"),
-                TimeElapsedColumn(),
-                console=console,
-            ) as progress:
-                task = progress.add_task("Executing prompt via Claude Code...", total=None)
-                results = detector.detect_cloud_patterns()
-                progress.update(task, description="Analysis complete!")
-    elif ctx.obj["dry_run"]:
-        console.print("[yellow]Dry run mode - showing prompt only[/yellow]")
-        results = detector.detect_cloud_patterns()
-    else:
-        results = detector.detect_cloud_patterns()
-    
-    console.print("\n" + results)
+    _run_analysis(ctx, "cloud")
+
+
+@cli.command(name="service-collaboration")
+@click.pass_context
+def service_collaboration(ctx):
+    """Detect service collaboration patterns in the codebase."""
+    _run_analysis(ctx, "service-collaboration")
 
 
 @cli.command()
@@ -336,8 +239,8 @@ def cloud(ctx):
     "--patterns",
     "-p",
     multiple=True,
-    type=click.Choice(["algorithms", "design_patterns", "architectural", "cloud"]),
-    help="Specific patterns to analyze (can be used multiple times)",
+    type=click.Choice([s.name for s in SKILLS]),
+    help="Specific skills to run (can be used multiple times; defaults to all)",
 )
 @click.option(
     "--chain",
@@ -348,56 +251,42 @@ def cloud(ctx):
 @click.pass_context
 def all(ctx, patterns: List[str], chain: bool):
     """Run all pattern detection analyses or specific ones."""
-    # If no specific patterns specified, run all
-    if not patterns:
-        patterns = ["algorithms", "design_patterns", "architectural", "cloud"]
-    
+    # If no specific patterns specified, run all registered skills
+    selected = list(patterns) if patterns else [s.name for s in SKILLS]
+
     # Show analysis overview
-    console.print(f"\n[bold blue]Pattern Analysis Overview[/bold blue]")
+    console.print("\n[bold blue]Pattern Analysis Overview[/bold blue]")
     console.print(f"Target: {ctx.obj['target_path']}")
-    console.print(f"Patterns: {', '.join(patterns)}")
+    console.print(f"Skills: {', '.join(selected)}")
     console.print(f"Mode: {'Chained' if chain else 'Individual'}")
-    
+
     if ctx.obj["execute"]:
-        # Check rate limits and get confirmation
-        num_requests = 1 if chain else len(patterns)
+        num_requests = 1 if chain else len(selected)
         pattern_desc = f"all patterns ({'chained' if chain else 'individual'})"
-        
+
         if not _check_rate_limit_and_confirm(ctx, pattern_desc, num_requests):
             console.print("[yellow]Analysis cancelled.[/yellow]")
             return
-        
-        # Additional confirmation for multiple patterns
-        if not chain and len(patterns) > 1:
-            estimated_time = len(patterns) * 30
+
+        if not chain and len(selected) > 1:
+            estimated_time = len(selected) * 30
             console.print(f"[cyan]Estimated time: ~{estimated_time} seconds[/cyan]")
             console.print("[yellow]This will make multiple separate requests to Claude Code.[/yellow]")
-            
+
             if ctx.obj["confirm"] and not Confirm.ask("Proceed with multiple requests?", default=True):
                 console.print("[yellow]Analysis cancelled.[/yellow]")
                 return
-    
-    detector = PatternDetector(
-        ctx.obj["repo_root"], 
-        ctx.obj["target_path"],
-        execute=ctx.obj["execute"],
-        dry_run=ctx.obj["dry_run"],
-        model=ctx.obj["model"],
-        interactive=ctx.obj["interactive"],
-        timeout=ctx.obj["timeout"],
-        verbose=ctx.obj["verbose"],
-        stream=ctx.obj["stream"]
-    )
-    
+
+    detector = _make_detector(ctx)
+
     if ctx.obj["execute"]:
         console.print("[yellow]Executing prompts via Claude Code...[/yellow]")
         if chain:
             console.print("[cyan]Using chained prompts in single session[/cyan]")
     elif ctx.obj["dry_run"]:
         console.print("[yellow]Dry run mode - showing prompts only[/yellow]")
-    
+
     if chain and ctx.obj["execute"]:
-        # Chain all prompts together
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -405,15 +294,14 @@ def all(ctx, patterns: List[str], chain: bool):
             console=console,
         ) as progress:
             task = progress.add_task("Executing chained analysis...", total=None)
-            result = detector.detect_all_patterns_chained(patterns)
+            result = detector.detect_all_patterns_chained(selected)
             progress.update(task, description="Chained analysis complete!")
-            
-        console.print(f"\n[bold green]Chained Analysis Results[/bold green]")
+
+        console.print("\n[bold green]Chained Analysis Results[/bold green]")
         console.print(result)
     else:
-        # Run each pattern separately
         results = {}
-        
+
         if ctx.obj["execute"]:
             with Progress(
                 SpinnerColumn(),
@@ -421,35 +309,22 @@ def all(ctx, patterns: List[str], chain: bool):
                 TimeElapsedColumn(),
                 console=console,
             ) as progress:
-                for i, pattern in enumerate(patterns):
-                    task = progress.add_task(f"Analyzing {pattern}... ({i+1}/{len(patterns)})", total=None)
-                    
-                    if pattern == "algorithms":
-                        results[pattern] = detector.detect_algorithms()
-                    elif pattern == "design_patterns":
-                        results[pattern] = detector.detect_design_patterns()
-                    elif pattern == "architectural":
-                        results[pattern] = detector.detect_architectural_patterns()
-                    elif pattern == "cloud":
-                        results[pattern] = detector.detect_cloud_patterns()
-                    
-                    progress.update(task, description=f"{pattern} analysis complete!")
+                for i, skill_name in enumerate(selected):
+                    skill = get_skill(skill_name)
+                    task = progress.add_task(
+                        f"Analyzing {skill.title}... ({i + 1}/{len(selected)})", total=None
+                    )
+                    results[skill_name] = detector._run_skill(skill)
+                    progress.update(task, description=f"{skill.title} analysis complete!")
         else:
-            for pattern in patterns:
-                console.print(f"\n[yellow]Analyzing {pattern}...[/yellow]")
-                
-                if pattern == "algorithms":
-                    results[pattern] = detector.detect_algorithms()
-                elif pattern == "design_patterns":
-                    results[pattern] = detector.detect_design_patterns()
-                elif pattern == "architectural":
-                    results[pattern] = detector.detect_architectural_patterns()
-                elif pattern == "cloud":
-                    results[pattern] = detector.detect_cloud_patterns()
-        
-        # Display results
-        for pattern, result in results.items():
-            console.print(f"\n[bold green]{pattern.replace('_', ' ').title()} Results[/bold green]")
+            for skill_name in selected:
+                skill = get_skill(skill_name)
+                console.print(f"\n[yellow]Analyzing {skill.title}...[/yellow]")
+                results[skill_name] = detector._run_skill(skill)
+
+        for skill_name, result in results.items():
+            skill = get_skill(skill_name)
+            console.print(f"\n[bold green]{skill.title} Results[/bold green]")
             console.print(result)
 
 
@@ -523,17 +398,7 @@ def test_claude(ctx):
     # Test simple prompt
     console.print("\n[yellow]Testing simple prompt...[/yellow]")
     test_prompt = "Please respond with exactly: 'Claude Code test successful'"
-    
-    detector = PatternDetector(
-        ctx.obj["repo_root"], 
-        ctx.obj["target_path"],
-        execute=True,
-        model=ctx.obj["model"],
-        timeout=30,
-        verbose=ctx.obj["verbose"],
-        stream=ctx.obj["stream"]
-    )
-    
+
     try:
         # Change to target directory
         original_cwd = os.getcwd()
@@ -622,33 +487,35 @@ def usage(ctx):
 @cli.command()
 @click.pass_context
 def list_specs(ctx):
-    """List available pattern specifications."""
+    """List available skills and their pattern specifications."""
     repo_root = ctx.obj["repo_root"]
     specs_dir = repo_root / "specs"
-    
-    table = Table(title="Available Pattern Specifications")
-    table.add_column("Category", style="cyan")
-    table.add_column("File", style="magenta")
-    table.add_column("Description", style="green")
-    
-    # Main specs
-    main_specs = [
-        ("algorithms-data-structures-spec.yaml", "Algorithms & Data Structures"),
-        ("design-patterns-spec.yaml", "Design Patterns"),
-        ("cloud-architecture-spec.yaml", "Cloud Architecture"),
-    ]
-    
-    for spec_file, description in main_specs:
-        if (specs_dir / spec_file).exists():
-            table.add_row("Main", spec_file, description)
-    
-    # Subdirectory specs
-    for subdir in specs_dir.iterdir():
-        if subdir.is_dir():
-            for spec_file in subdir.glob("*.yaml"):
-                table.add_row(subdir.name.title(), spec_file.name, f"{subdir.name.title()} Pattern")
-    
-    console.print(table)
+
+    # Skills table driven by the registry
+    skills_table = Table(title="Registered Skills")
+    skills_table.add_column("Name", style="cyan")
+    skills_table.add_column("Title", style="yellow")
+    skills_table.add_column("Description", style="green")
+    skills_table.add_column("Prompt File", style="magenta")
+
+    for skill in SKILLS:
+        skills_table.add_row(skill.name, skill.title, skill.description, skill.prompt_file)
+
+    console.print(skills_table)
+
+    # Spec files on disk
+    specs_table = Table(title="Available Spec Files")
+    specs_table.add_column("Category", style="cyan")
+    specs_table.add_column("File", style="magenta")
+
+    for spec_file in sorted(specs_dir.glob("*.yaml")):
+        specs_table.add_row("Main", spec_file.name)
+
+    for subdir in sorted(p for p in specs_dir.iterdir() if p.is_dir()):
+        for spec_file in sorted(subdir.glob("*.yaml")):
+            specs_table.add_row(subdir.name.title(), spec_file.name)
+
+    console.print(specs_table)
 
 
 def main():
