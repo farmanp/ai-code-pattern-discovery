@@ -93,6 +93,14 @@ This project helps developers and AI systems identify and understand:
 
 ```
 ai-code-pattern-discovery/
+├── agents/                  # Agent markdown definitions for the interview prep tool
+│   ├── repo_analyzer.md     # Analyzes repo structure, languages, patterns
+│   ├── skills_extractor.md  # Maps patterns to interview-relevant skills
+│   └── question_generator.md # Generates interview questions by difficulty
+├── skills/                  # Shared skill vocabulary used by agents
+│   ├── skills_db.md         # Canonical skill definitions, categories, difficulty
+│   └── patterns.md          # Code pattern → skill mappings and difficulty rules
+├── main.py                  # Interview prep tool orchestrator (three-agent pipeline)
 ├── docs/                    # Pattern taxonomies and guides
 ├── prompts/                 # AI prompts for pattern analysis
 ├── specs/                   # YAML specifications for patterns
@@ -210,7 +218,132 @@ The CLI acts as a lightweight **agent** that:
 3. Dispatches each skill via `PatternDetector._run_skill()`, passing the compiled prompt to Claude Code
 4. In **chained mode** (`--chain`), combines all skill prompts into a single Claude Code session for holistic analysis
 
+---
 
+## Interview Prep Tool
+
+`main.py` is a standalone three-agent pipeline that analyzes **any** code repository and generates tailored technical interview questions using the Anthropic Claude API.
+
+### What it does
+
+1. **Repo Analyzer** — scans the repository structure, detects languages, architectural patterns, algorithms, data structures, and design patterns used.
+2. **Skills Extractor** — maps every detected pattern to a curated set of interview-relevant skills (algorithms, data structures, design patterns, system design), each rated by difficulty and relevance.
+3. **Question Generator** — produces interview questions at easy / medium / hard difficulty levels, tagged with skill, category, company patterns, answer hints, and follow-up questions.
+
+Results are saved as both JSON (machine-readable, for curation tooling) and Markdown (human-readable, for study guides).
+
+### How to use it
+
+**Prerequisites**
+
+```bash
+pip install anthropic      # if not already in your environment
+export ANTHROPIC_API_KEY="sk-ant-..."
+```
+
+**Run on any repository**
+
+```bash
+# Analyze this repository itself and generate questions (saves to ./interview_prep_output/)
+python main.py .
+
+# Target a different repo and specify output location
+python main.py /path/to/some/repo --output-dir ~/prep_sessions/my_repo
+
+# Preview the agent prompts without making any API calls
+python main.py /path/to/repo --dry-run
+
+# Use a specific model and cap question count
+python main.py /path/to/repo --model claude-3-5-sonnet-20241022 --max-questions 20
+
+# Save only JSON (skip Markdown)
+python main.py /path/to/repo --format json
+```
+
+**All options**
+
+```
+usage: main.py [-h] [--output-dir OUTPUT_DIR] [--format {json,markdown,both}]
+               [--model MODEL] [--max-questions MAX_QUESTIONS] [--dry-run]
+               repo_path
+
+positional arguments:
+  repo_path             Path to the repository to analyze.
+
+optional arguments:
+  --output-dir DIR      Directory to write results (default: ./interview_prep_output)
+  --format {json,markdown,both}
+                        Output format (default: both)
+  --model MODEL         Claude model to use (default: claude-opus-4-5)
+  --max-questions N     Maximum questions to generate (default: 30)
+  --dry-run             Print agent prompts without calling the API
+```
+
+### Example output
+
+After running `python main.py /path/to/repo`, you get two files in `interview_prep_output/`:
+
+**`interview_prep_<timestamp>.md`** (study guide)
+```markdown
+# Interview Prep Questions
+
+**Repository:** `/path/to/repo`
+**Generated:** 2026-01-15T10:30:00Z
+
+## Summary
+- Total questions: 18
+- By difficulty: easy: 6, medium: 8, hard: 4
+- By category: algorithms: 7, data-structures: 4, design-patterns: 4, system-design: 3
+
+---
+
+## Algorithms
+
+### Easy
+
+#### How does binary search work?
+**Skill:** Binary Search
+**Context:** Found in the search module; used to locate pattern entries in the sorted skills registry.
+**Answer hints:**
+- Repeatedly halve the search space using two pointers
+- Requires a sorted input; returns the index or -1 if not found
+**Follow-ups:**
+- What is its time complexity? When can you apply it to a non-array search space?
+**Company patterns:** Google, Amazon, Meta
+```
+
+**`interview_prep_<timestamp>.json`** (machine-readable)
+```json
+{
+  "repo_analysis": { ... },
+  "extracted_skills": { ... },
+  "questions": {
+    "questions": [ ... ],
+    "summary": { "total_questions": 18, ... }
+  }
+}
+```
+
+### How the agents work together
+
+```
+main.py
+│
+├─► agents/repo_analyzer.md ──────► Claude API ──► repo_analysis.json
+│         (scan structure, detect patterns)
+│
+├─► agents/skills_extractor.md ───► Claude API ──► extracted_skills.json
+│         (map patterns → skills using skills/skills_db.md + skills/patterns.md)
+│
+└─► agents/question_generator.md ─► Claude API ──► questions.json + questions.md
+          (generate easy/medium/hard questions per skill)
+```
+
+Each agent is a self-contained Markdown file in `agents/`. You can iterate on any one independently — change the prompt, adjust output schema, add new skill categories — without touching the others.
+
+The `skills/` directory provides the shared vocabulary:
+- `skills/skills_db.md` — canonical list of all skills with IDs, categories, and default difficulty
+- `skills/patterns.md` — lookup table mapping detected code patterns to skill IDs
 
 ## Installation
 
