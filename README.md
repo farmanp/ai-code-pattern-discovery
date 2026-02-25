@@ -18,6 +18,7 @@ This project helps developers and AI systems identify and understand:
 - 🔗 **Cross-Reference Guide**: Understanding relationships between different pattern types
 - 📊 **Complexity Analysis**: Big-O notation and performance considerations
 - 🖥️ **CLI Tool**: Command-line interface for easy pattern analysis on any codebase
+- 🧩 **Skills Registry**: Each analysis type is a named, self-describing `PatternSkill` with a prompt template and associated specs
 
 ## Usage
 
@@ -58,14 +59,15 @@ This project helps developers and AI systems identify and understand:
    ai-code-pattern-discovery design-patterns              # Detect design patterns
    ai-code-pattern-discovery architectural                # Detect architectural patterns
    ai-code-pattern-discovery cloud                        # Detect cloud patterns
+   ai-code-pattern-discovery service-collaboration        # Detect service collaboration patterns
    ai-code-pattern-discovery all                          # Run all analyses
-   ai-code-pattern-discovery list-specs                   # List available specifications
+   ai-code-pattern-discovery list-specs                   # List all skills and available specifications
    
    # Target a specific codebase
    ai-code-pattern-discovery --target-path /path/to/code --execute all
    
    # Run specific pattern analyses
-   ai-code-pattern-discovery --execute all --patterns algorithms --patterns design_patterns
+   ai-code-pattern-discovery --execute all --patterns algorithms --patterns design-patterns
    
    # Chain prompts together in a single Claude Code session
    ai-code-pattern-discovery --execute all --chain
@@ -98,7 +100,8 @@ ai-code-pattern-discovery/
 │   └── ai_code_pattern_discovery/
 │       ├── __init__.py
 │       ├── cli.py          # Main CLI interface
-│       └── pattern_detector.py  # Pattern detection logic
+│       ├── skills.py       # PatternSkill registry (skills + agent definitions)
+│       └── pattern_detector.py  # Pattern detection logic driven by skills registry
 ├── scripts/                 # Generation and processing scripts
 ├── examples/                # Example outputs
 ├── templates/               # Specification templates
@@ -184,6 +187,30 @@ The CLI now provides excellent visibility into what's happening:
 - **Diagnostic Commands**: `test-claude` to verify Claude Code connectivity
 
 For more detailed information, check out `docs/getting-started.md` for a comprehensive introduction to using this pattern discovery system.
+
+## Skills & Agents Architecture
+
+The tool is structured around two core concepts from modern AI agent design:
+
+### Skills
+
+A **skill** (`PatternSkill`) is a named, self-describing analysis capability.  Each skill bundles:
+- a unique `name` (CLI command identifier)
+- a human-readable `title` and `description`
+- a `prompt_file` (template in `prompts/`)
+- one or more `spec_files` (YAML specs in `specs/`) the prompt should consult
+
+The registry lives in `src/ai_code_pattern_discovery/skills.py` and is the single source-of-truth for all supported analyses.  To add a new skill, add a `PatternSkill` entry to the `SKILLS` list — the CLI and `PatternDetector` will pick it up automatically.
+
+### Agent Orchestration
+
+The CLI acts as a lightweight **agent** that:
+1. Resolves the requested skill(s) from the registry
+2. Checks rate limits and asks for confirmation before expensive operations
+3. Dispatches each skill via `PatternDetector._run_skill()`, passing the compiled prompt to Claude Code
+4. In **chained mode** (`--chain`), combines all skill prompts into a single Claude Code session for holistic analysis
+
+
 
 ## Installation
 

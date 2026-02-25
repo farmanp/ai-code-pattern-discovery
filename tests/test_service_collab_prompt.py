@@ -21,3 +21,11 @@ def test_build_prompt():
     prompt = build_prompt(spec)
     assert "Saga" in prompt
     assert "API Composition" in prompt
+
+
+def test_build_prompt_no_stray_quotes():
+    """Ensure the prompt does not contain literal f-string artefacts."""
+    spec = {"service_collaboration_patterns": [{"name": "Saga"}]}
+    prompt = build_prompt(spec)
+    assert 'f"' not in prompt
+    assert prompt.startswith("# Service Collaboration Scan Prompt")

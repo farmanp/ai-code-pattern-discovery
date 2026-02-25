@@ -18,9 +18,11 @@ def load_spec(path: Path):
 def build_prompt(spec):
     patterns = [p["name"] for p in spec.get("service_collaboration_patterns", [])]
     pattern_list = ", ".join(patterns)
-    return f"""# Service Collaboration Scan Prompt\n\n" \
-           f"Supported patterns: {pattern_list}.\n" \
-           "Provide CODE_PATH when invoking this script to fill in the target repository."""
+    return (
+        "# Service Collaboration Scan Prompt\n\n"
+        f"Supported patterns: {pattern_list}.\n"
+        "Provide CODE_PATH when invoking this script to fill in the target repository."
+    )
 
 
 if __name__ == "__main__":
