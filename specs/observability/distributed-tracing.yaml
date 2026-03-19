@@ -1,0 +1,22 @@
+observability_patterns:
+  - name: "Distributed Tracing"
+    category: "observability"
+    implementation_complexity: Medium
+    detection_complexity: Moderate
+    performance_impact: Low
+    hints:
+      - "opentelemetry"
+      - "zipkin"
+      - "jaeger"
+      - "traceparent"
+      - "tracestate"
+      - "span id"
+    report_fields:
+      - "tracing_library"
+      - "header_propagation"
+      - "span_logging"
+    related:
+      patterns:
+        - "Logging Aggregation"
+      cloud:
+        - "Service Mesh"
